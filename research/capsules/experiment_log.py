@@ -35,8 +35,6 @@ from models import conv_model
 
 FLAGS = tf.flags.FLAGS
 
-start = None
-
 tf.flags.DEFINE_string('data_dir', None, 'The data directory.')
 tf.flags.DEFINE_integer('eval_size', 10000, 'Size of the test dataset.')
 tf.flags.DEFINE_string('hparams_override', None,
@@ -179,8 +177,7 @@ def train_experiment(session, result, writer, last_step, max_steps, saver,
     save_step: How often to save the model ckpt.
   """
   step = 0
-  if start is None:
-    start = time.time()
+  start = time.time()
   for i in range(last_step, max_steps):
     step += 1
     summary, _ = session.run([result.summary, result.train_op])
