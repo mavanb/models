@@ -180,10 +180,9 @@ def train_experiment(session, result, writer, last_step, max_steps, saver,
   for i in range(last_step, max_steps):
     summary, _ = session.run([result.summary, result.train_op])
     writer.add_summary(summary, i)
-    if (i + 1) % 10 == 0:
-        speed = (time.time() - start) / (128. * i)
-        # print("\rAverage speed per datapoint: {}".format(speed), end="")
-        print("Average speed per datapoint: {}".format(speed))
+    if i % 50 == 1:
+        speed = (time.time() - start) / (128 * i)
+        print("Speed: {}".format(speed))
     if (i + 1) % save_step == 0:
       saver.save(
           session, os.path.join(summary_dir, 'model.ckpt'), global_step=i + 1)
