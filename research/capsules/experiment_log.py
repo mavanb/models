@@ -1,5 +1,5 @@
 from experiment_log import *
-
+import tensorflow as tf
 
 def train_experiment(session, result, writer, last_step, max_steps, saver,
                      summary_dir, save_step):
