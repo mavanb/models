@@ -176,14 +176,12 @@ def train_experiment(session, result, writer, last_step, max_steps, saver,
     summary_dir: The directory to save the model in it.
     save_step: How often to save the model ckpt.
   """
-  step = 0
   start = time.time()
   for i in range(last_step, max_steps):
-    step += 1
     summary, _ = session.run([result.summary, result.train_op])
     writer.add_summary(summary, i)
-    if step % 100 == 0:
-        speed = (time.time() - start) / (128. * step)
+    if (i + 1) % 10 == 0:
+        speed = (time.time() - start) / (128. * i)
         print("\rAverage speed per datapoint: {}".format(speed), end="")
     if (i + 1) % save_step == 0:
       saver.save(
