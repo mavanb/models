@@ -25,6 +25,7 @@ def train_experiment(session, result, writer, last_step, max_steps, saver,
       saver.save(
           session, os.path.join(summary_dir, 'model.ckpt'), global_step=i + 1)
 
+main = main
 
 if __name__ == '__main__':
   tf.app.run()
