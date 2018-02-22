@@ -179,10 +179,14 @@ def train_experiment(session, result, writer, last_step, max_steps, saver,
   start = time.time()
   for i in range(last_step, max_steps):
 
-    summary, _ , logits_value= session.run([result.summary, result.train_op, result.logits])
+    summary, _ , logits_value, capsules_value= session.run([result.summary, result.train_op, result.logits, result.capsules])
 
     print("Shape of the logits: {}".format(logits_value[0].shape))
     print("Sum axis 1 of the logits (to check if also not sum to 1: {}".format(logits_value[0].sum(axis=1)))
+
+    print("Shape of the capsules: {}".format(capsules_value[0].shape))
+    print("First capsules form batch (so check order of number)".format(capsules_value[0][0, :, :]))
+
     writer.add_summary(summary, i)
     if i % 50 == 1:
         speed = (time.time() - start) / (128 * i)

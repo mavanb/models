@@ -204,4 +204,4 @@ class CapsuleModel(model.Model):
     else:
       remake = None
 
-    return model.Inferred(logits, remake)
+    return model.Inferred(logits, remake, capsule_output)

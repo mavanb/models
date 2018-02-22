@@ -35,11 +35,11 @@ import tensorflow as tf
 from models.layers import layers
 
 TowerResult = collections.namedtuple('TowerResult', ('inferred', 'almost',
-                                                     'correct', 'grads', 'logits'))
+                                                     'correct', 'grads', 'logits', 'capsules'))
 JoinedResult = collections.namedtuple('JoinedResult', ('summary', 'train_op',
-                                                       'correct', 'almost', 'logits'))
+                                                       'correct', 'almost', 'logits', 'capsules'))
 Inferred = collections.namedtuple('Inferred',
-                                  ('logits', 'remakes'))
+                                  ('logits', 'remakes', 'capsules'))
 
 
 class Model(object):
@@ -112,7 +112,7 @@ class Model(object):
         tf.get_variable_scope().reuse_variables()
         grads = self._optimizer.compute_gradients(losses)
 
-    return TowerResult(inferred, almost, correct, grads, inferred.logits)
+    return TowerResult(inferred, almost, correct, grads, inferred.logits, inferred.capsules)
 
   def _average_gradients(self, tower_grads):
     """Calculate the average gradient for each variable across all towers.
@@ -134,7 +134,7 @@ class Model(object):
       average_grads.append(grad_and_var)
     return average_grads
 
-  def _summarize_towers(self, almosts, corrects, tower_grads, logits):
+  def _summarize_towers(self, almosts, corrects, tower_grads, logits, capsules):
     """Aggregates the results and gradients over all towers.
 
     Args:
@@ -155,7 +155,7 @@ class Model(object):
     stacked_almosts = tf.stack(almosts)
     summed_corrects = tf.reduce_sum(stacked_corrects, 0)
     summed_almosts = tf.reduce_sum(stacked_almosts, 0)
-    return JoinedResult(summary, train_op, summed_corrects, summed_almosts, logits)
+    return JoinedResult(summary, train_op, summed_corrects, summed_almosts, logits, capsules)
 
   def multi_gpu(self, features, num_gpus):
     """Build the Graph and add the train ops on multiple GPUs.
@@ -177,6 +177,7 @@ class Model(object):
     tower_grads = []
     inferred = []
     logits = []
+    capsules = []
     with tf.variable_scope(tf.get_variable_scope()):
       for i in xrange(num_gpus):
         tower_output = self._single_tower(i, features[i])
@@ -185,6 +186,7 @@ class Model(object):
         corrects.append(tower_output.correct)
         tower_grads.append(tower_output.grads)
         logits.append(tower_output.logits)
+        capsules.append(tower_output.capsules)
 
-    summarized_results = self._summarize_towers(almosts, corrects, tower_grads, logits)
+    summarized_results = self._summarize_towers(almosts, corrects, tower_grads, logits, capsules)
     return summarized_results, inferred
