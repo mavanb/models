@@ -112,7 +112,7 @@ class Model(object):
         tf.get_variable_scope().reuse_variables()
         grads = self._optimizer.compute_gradients(losses)
 
-    return TowerResult(inferred, almost, correct, grads, logits)
+    return TowerResult(inferred, almost, correct, grads, inferred.logits)
 
   def _average_gradients(self, tower_grads):
     """Calculate the average gradient for each variable across all towers.
