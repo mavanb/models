@@ -185,7 +185,7 @@ def train_experiment(session, result, writer, last_step, max_steps, saver,
     print("Sum axis 1 of the logits (to check if also not sum to 1: {}".format(logits_value[0].sum(axis=1)))
 
     print("Shape of the capsules: {}".format(capsules_value[0].shape))
-    print("First capsules form batch (so check order of number)".format(capsules_value[0][0, :, :]))
+    print("First capsules form batch (so check order of number): {}".format(capsules_value[0][0, :, :]))
 
     writer.add_summary(summary, i)
     if i % 50 == 1:
