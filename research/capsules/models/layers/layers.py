@@ -108,6 +108,7 @@ def _update_routing(votes, biases, logit_shape, num_dims, input_dim, output_dim,
       route = _leaky_routing(logits, output_dim)
     else:
       route = tf.nn.softmax(logits, dim=2)
+      print(route.shape)
     preactivate_unrolled = route * votes_trans
     preact_trans = tf.transpose(preactivate_unrolled, r_t_shape)
     preactivate = tf.reduce_sum(preact_trans, axis=1) + biases
