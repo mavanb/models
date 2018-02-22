@@ -35,9 +35,9 @@ import tensorflow as tf
 from models.layers import layers
 
 TowerResult = collections.namedtuple('TowerResult', ('inferred', 'almost',
-                                                     'correct', 'grads'))
+                                                     'correct', 'grads', 'logits'))
 JoinedResult = collections.namedtuple('JoinedResult', ('summary', 'train_op',
-                                                       'correct', 'almost'))
+                                                       'correct', 'almost', 'logits'))
 Inferred = collections.namedtuple('Inferred',
                                   ('logits', 'remakes'))
 
@@ -112,7 +112,7 @@ class Model(object):
         tf.get_variable_scope().reuse_variables()
         grads = self._optimizer.compute_gradients(losses)
 
-    return TowerResult(inferred, almost, correct, grads)
+    return TowerResult(inferred, almost, correct, grads, logits)
 
   def _average_gradients(self, tower_grads):
     """Calculate the average gradient for each variable across all towers.
@@ -134,7 +134,7 @@ class Model(object):
       average_grads.append(grad_and_var)
     return average_grads
 
-  def _summarize_towers(self, almosts, corrects, tower_grads):
+  def _summarize_towers(self, almosts, corrects, tower_grads, logits):
     """Aggregates the results and gradients over all towers.
 
     Args:
@@ -155,7 +155,7 @@ class Model(object):
     stacked_almosts = tf.stack(almosts)
     summed_corrects = tf.reduce_sum(stacked_corrects, 0)
     summed_almosts = tf.reduce_sum(stacked_almosts, 0)
-    return JoinedResult(summary, train_op, summed_corrects, summed_almosts)
+    return JoinedResult(summary, train_op, summed_corrects, summed_almosts, logits)
 
   def multi_gpu(self, features, num_gpus):
     """Build the Graph and add the train ops on multiple GPUs.
@@ -176,6 +176,7 @@ class Model(object):
     corrects = []
     tower_grads = []
     inferred = []
+    logits = []
     with tf.variable_scope(tf.get_variable_scope()):
       for i in xrange(num_gpus):
         tower_output = self._single_tower(i, features[i])
@@ -183,6 +184,7 @@ class Model(object):
         almosts.append(tower_output.almost)
         corrects.append(tower_output.correct)
         tower_grads.append(tower_output.grads)
+        logits.append(tower_output.logits)
 
-    summarized_results = self._summarize_towers(almosts, corrects, tower_grads)
+    summarized_results = self._summarize_towers(almosts, corrects, tower_grads, logits)
     return summarized_results, inferred

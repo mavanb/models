@@ -181,7 +181,7 @@ def train_experiment(session, result, writer, last_step, max_steps, saver,
 
     summary, _ , logits_value= session.run([result.summary, result.train_op, result.logits])
 
-    print("Shape of the logits: {}".format(logits.shape))
+    print("Shape of the logits: {}".format(logits_value.shape))
     print("Sum axis 1 of the logits (to check if also not sum to 1: {}".format(logits_value.sum(axis=1)))
     writer.add_summary(summary, i)
     if i % 50 == 1:
