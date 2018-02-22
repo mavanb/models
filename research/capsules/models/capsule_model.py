@@ -195,9 +195,8 @@ class CapsuleModel(model.Model):
 
     # Capsules
     capsule_output = self._build_capsule(hidden1, features['num_classes'])
-    logits = tf.norm(capsule_output, axis=-1)
-    print("Shape of the logits: {}".format(logits.shape))
-    print("Sum axis 1 of the logits (to check if also not sum to 1: {}".format(logits.sum(axis=1)))
+    self.logits = tf.norm(capsule_output, axis=-1)
+
 
     # Reconstruction
     if self._hparams.remake:
