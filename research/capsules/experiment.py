@@ -152,6 +152,7 @@ def load_training(saver, session, load_dir):
     if ckpt and ckpt.model_checkpoint_path:
       saver.restore(session, ckpt.model_checkpoint_path)
       prev_step = extract_step(ckpt.model_checkpoint_path)
+      print("model loaded successfully from step {}".format(prev_step))
     else:
       tf.gfile.DeleteRecursively(load_dir)
       tf.gfile.MakeDirs(load_dir)
